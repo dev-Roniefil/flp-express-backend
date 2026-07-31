@@ -14,6 +14,8 @@ use App\Http\Controllers\UploadController;
 
 use App\Http\Controllers\ConvergeController;
 
+use App\Http\Controllers\SettingController;
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -43,6 +45,8 @@ Route::apiResource('users', UserController::class);
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Specific routes first
 Route::get('/orders/by-number/{orderNumber}', [OrderController::class, 'showByNumber']);
@@ -81,3 +85,13 @@ Route::post('/upload/option-image', [UploadController::class, 'uploadOptionImage
 
 Route::post('/converge/token', [ConvergeController::class, 'token']);
 Route::post('/converge/complete', [ConvergeController::class, 'complete']);
+
+
+// Settings - Public (storefront)
+Route::get('/settings/public', [SettingController::class, 'publicIndex']);
+
+// Admin (auth + role checked in controller)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/settings', [SettingController::class, 'index']);
+    Route::put('/settings', [SettingController::class, 'update']);
+});
